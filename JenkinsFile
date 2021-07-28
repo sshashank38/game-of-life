@@ -14,7 +14,7 @@ pipeline {
         stage('Scm') { 
             steps {                 
                 git credentialsId: 'jenkins_pwd', url: 'https://github.com/sshashank38/game-of-life.git'
-                mail subject "Build Started" +env.BUILD_ID 
+                mail subject: "Build Started" +env.BUILD_ID 
             }
         }
         stage('Build') { 
@@ -32,10 +32,10 @@ pipeline {
         success {
             junit '**/TEST-*.xml'
             archiveArtifacts artifacts: '**/*.war', followSymlinks: false
-            mail subject "Build Success" +env.BUILD_ID 
+            mail subject: "Build Success" +env.BUILD_ID 
         }
         failure {
-            mail subject "Build Failed" +env.BUILD_URL 
+            mail subject: "Build Failed" +env.BUILD_URL 
         }
     }
 }
