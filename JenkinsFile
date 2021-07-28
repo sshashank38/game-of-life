@@ -13,7 +13,4 @@ node('GOL') {
         junit '**/TEST-*.xml'
         archiveArtifacts artifacts: '**/*.war', followSymlinks: false
     }
-
-
-}
 }
