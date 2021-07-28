@@ -1,4 +1,3 @@
-Jenkinsfile (Declarative Pipeline)
 pipeline {
     agent {label GOL} 
     stages {
@@ -19,6 +18,5 @@ pipeline {
                 junit '**/TEST-*.xml'
                 artifacts '**/*.war'
         }
-    }
-    
+    } 
 }
