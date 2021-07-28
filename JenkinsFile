@@ -16,8 +16,6 @@ pipeline {
                 git credentialsId: 'jenkins_pwd', url: 'https://github.com/sshashank38/game-of-life.git'
                 mail subject "Build Started" body +env.BUILD_ID "Build has started"
             }
-                
-            }
         }
         stage('Build') { 
             options {
