@@ -1,16 +1,24 @@
-
-node('GOL') {
-
-    stage('scm') {
-        git credentialsId: 'jenkins_pwd', url: 'https://github.com/sshashank38/game-of-life.git'
+Jenkinsfile (Declarative Pipeline)
+pipeline {
+    agent {label GOL} 
+    stages {
+        stage('Scm') { 
+            steps {
+                git credentialsId: 'jenkins_pwd', url: 'https://github.com/sshashank38/game-of-life.git'
+            }
+        }
+        stage('Build') { 
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        post {
+            // If Maven was able to run the tests, even if some of the test
+            // failed, record the test results and archive the jar file.
+            success {
+                junit '**/TEST-*.xml'
+                artifacts '**/*.war'
+        }
     }
-
-    stage('build') {
-        sh 'mvn clean package'
-    }
-
-    stage('postbuild'){
-        junit '**/TEST-*.xml'
-        archiveArtifacts artifacts: '**/*.war', followSymlinks: false
-    }
+    
 }
