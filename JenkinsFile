@@ -1,17 +1,28 @@
 pipeline {
     agent {label 'GOL'} 
     triggers {
-        cron('H/15 * * * *')
-        pollSCM('* * * * *')
-        
+        cron('H * * * *')
+        pollSCM('* * * * *')   
+    }
+    options{
+        retry(2)
+        timeout(time: 1, unit: 'HOURS') 
+        timestamps()
+
     }
     stages {
         stage('Scm') { 
-            steps {
+            steps {                 
                 git credentialsId: 'jenkins_pwd', url: 'https://github.com/sshashank38/game-of-life.git'
+                mail subject "Build Started" body +env.BUILD_ID "Build has started"
+            }
+                
             }
         }
         stage('Build') { 
+            options {
+                timeout(time: 15, unit: 'MINUTES') 
+            }
             steps {
                 sh 'mvn clean package'
             }
@@ -23,6 +34,10 @@ pipeline {
         success {
             junit '**/TEST-*.xml'
             archiveArtifacts artifacts: '**/*.war', followSymlinks: false
+            mail subject "Build Success" body +env.BUILD_ID "Build is successful"
+        }
+        failure {
+            mail subject "Build Failed" body +env.BUILD_URL "Build has failed"
         }
     }
 }
