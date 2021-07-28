@@ -18,5 +18,5 @@ pipeline {
                 junit '**/TEST-*.xml'
                 artifacts '**/*.war'
         }
-    } 
+    } }
 }
