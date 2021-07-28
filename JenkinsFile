@@ -17,7 +17,7 @@ pipeline {
         // failed, record the test results and archive the jar file.
         success {
             junit '**/TEST-*.xml'
-            artifacts '**/*.war'
+            archiveArtifacts artifacts: '**/*.war', followSymlinks: false
         }
     }
 }
