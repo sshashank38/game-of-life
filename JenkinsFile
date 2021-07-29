@@ -10,6 +10,9 @@ pipeline {
         timestamps()
 
     }
+    parameters {
+        choice(name: 'BRANCH', choices: ['master', 'develop', 'qa', 'integration'], description: 'Git branches')
+    }
     stages {
         stage('Scm') { 
             steps {                 
