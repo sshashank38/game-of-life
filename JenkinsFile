@@ -2,16 +2,12 @@ pipeline {
     agent {label 'GOL'} 
     triggers {
         cron('H * * * *')
-        pollSCM('* * * * *')   
     }
     options{
         retry(2)
         timeout(time: 1, unit: 'HOURS') 
         timestamps()
 
-    }
-    parameters {
-        choice(name: 'BRANCH', choices: ['master', 'develop', 'qa', 'integration'], description: 'Git branches')
     }
     stages {
         stage('Scm') { 
