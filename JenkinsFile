@@ -2,16 +2,12 @@ pipeline {
     agent {label 'GOL'} 
     triggers {
         cron('H * * * *')
-        pollSCM('* * * * *')   
     }
     options{
-        retry(2)
+       
         timeout(time: 1, unit: 'HOURS') 
         timestamps()
 
-    }
-    parameters {
-        choice(name: 'BRANCH', choices: ['master', 'develop', 'qa', 'integration'], description: 'Git branches')
     }
     stages {
         stage('Scm') { 
@@ -28,17 +24,35 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
+        stage('SonarQube analysis') {
+            steps{
+                // performing sonarqube analysis with "withSonarQubeENV(<Name of Server configured in Jenkins>)"
+                withSonarQubeEnv('SONAR-8.9LTS') {
+                // requires SonarQube Scanner for Maven 3.2+
+                    sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar'
+                }
+            }
+        }
     }
     post {
         // If Maven was able to run the tests, even if some of the test
         // failed, record the test results and archive the jar file.
         success {
             junit '**/TEST-*.xml'
-            archiveArtifacts artifacts: '**/*.war', followSymlinks: false
+            archive '**/*.war'
             mail subject: "Build Success"  +env.BUILD_ID, body: "Build is successful", to: 'abc@xyz'
         }
         failure {
-            mail subject: "Build Failed"  +env.BUILD_URL, body: "Build has failed", to: 'abc@xyz'
+            mail subject: "Build Failed "  +env.BUILD_URL, body: "Build has failed", to: 'abc@xyz'
+        }
+        always {
+            echo "Finished"
+        }
+        changed {
+            echo "Changed"
+        }
+        unstable {
+            mail subject: 'BUILD Unstable '+env.BUILD_ID+'URL is '+env.BUILD_URL, to: 'devops@qt.com', from: 'jenkins@qt.com', body: 'EMPTY BODY'
         }
     }
 }
